@@ -191,12 +191,16 @@ open class XAxisRenderer: AxisRendererBase
         paraStyle.alignment = .center
         
         let labelAttrs = [NSFontAttributeName: xAxis.labelFont,
-            NSForegroundColorAttributeName: xAxis.labelTextColor,
-            NSParagraphStyleAttributeName: paraStyle] as [String : NSObject]
+                          NSForegroundColorAttributeName: xAxis.labelTextColor,
+                          NSParagraphStyleAttributeName: paraStyle] as [String : NSObject]
+        let lastLabelsAttrs = [NSFontAttributeName: xAxis.specialLabelsFont,
+                               NSForegroundColorAttributeName: xAxis.specialLabelsTextColor,
+                               NSParagraphStyleAttributeName: paraStyle] as [String : NSObject]
+        
         let labelRotationAngleRadians = xAxis.labelRotationAngle * ChartUtils.Math.FDEG2RAD
         
         let centeringEnabled = xAxis.isCenterAxisLabelsEnabled
-
+        
         let valueToPixelMatrix = transformer.valueToPixelMatrix
         
         var position = CGPoint(x: 0.0, y: 0.0)
@@ -209,6 +213,9 @@ open class XAxisRenderer: AxisRendererBase
         }
         
         let entries = xAxis.entries
+        let spaceForEachLabel = UIScreen.main.bounds.width/CGFloat(entries.count)
+        let specialLabelMaxX = UIScreen.main.bounds.width - xAxis.labelsRightOffset
+        let specialLabelMinX = specialLabelMaxX - 5*spaceForEachLabel/6
         
         for i in stride(from: 0, to: entries.count, by: 1)
         {
@@ -227,7 +234,10 @@ open class XAxisRenderer: AxisRendererBase
             if viewPortHandler.isInBoundsX(position.x)
             {
                 let label = xAxis.valueFormatter?.stringForValue(xAxis.entries[i], axis: xAxis) ?? ""
-
+                //take label position to determine
+                let isSpecialLabel = xAxis.shouldDrawSpecialLabels && position.x >= specialLabelMinX && position.x <= specialLabelMaxX
+                let labelAttributes = isSpecialLabel ? lastLabelsAttrs : labelAttrs
+                
                 let labelns = label as NSString
                 
                 if xAxis.isAvoidFirstLastClippingEnabled
@@ -235,7 +245,7 @@ open class XAxisRenderer: AxisRendererBase
                     // avoid clipping of the last
                     if i == xAxis.entryCount - 1 && xAxis.entryCount > 1
                     {
-                        let width = labelns.boundingRect(with: labelMaxSize, options: .usesLineFragmentOrigin, attributes: labelAttrs, context: nil).size.width
+                        let width = labelns.boundingRect(with: labelMaxSize, options: .usesLineFragmentOrigin, attributes: labelAttributes, context: nil).size.width
                         
                         if width > viewPortHandler.offsetRight * 2.0
                             && position.x + width > viewPortHandler.chartWidth
@@ -245,16 +255,25 @@ open class XAxisRenderer: AxisRendererBase
                     }
                     else if i == 0
                     { // avoid clipping of the first
-                        let width = labelns.boundingRect(with: labelMaxSize, options: .usesLineFragmentOrigin, attributes: labelAttrs, context: nil).size.width
+                        let width = labelns.boundingRect(with: labelMaxSize, options: .usesLineFragmentOrigin, attributes: labelAttributes, context: nil).size.width
                         position.x += width / 2.0
                     }
                 }
                 
+                let y: CGFloat
+                if isSpecialLabel {
+                    let labelSizeWithCommonFont = label.size(attributes: [NSFontAttributeName: xAxis.labelFont])
+                    let labelSizeWithSpecialFont = label.size(attributes: [NSFontAttributeName: xAxis.specialLabelsFont])
+                    y = pos - 3*(labelSizeWithSpecialFont.height - labelSizeWithCommonFont.height)/4
+                }
+                else {
+                    y = pos
+                }
                 drawLabel(context: context,
                           formattedLabel: label,
                           x: position.x,
-                          y: pos,
-                          attributes: labelAttrs,
+                          y: y,
+                          attributes: labelAttributes,
                           constrainedToSize: labelMaxSize,
                           anchor: anchor,
                           angleRadians: labelRotationAngleRadians)
