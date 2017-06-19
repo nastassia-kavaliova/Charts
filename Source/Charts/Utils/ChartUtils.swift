@@ -249,6 +249,22 @@ open class ChartUtils
         drawMultilineText(context: context, text: text, knownTextSize: rect.size, point: point, attributes: attributes, constrainedToSize: constrainedToSize, anchor: anchor, angleRadians: angleRadians)
     }
     
+    open class func drawLine(context: CGContext, x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat)
+    {
+        
+        context.saveGState()
+        
+        context.setStrokeColor(UIColor.white.cgColor)
+        context.setLineWidth(width)
+        context.setLineDash(phase: 0.0, lengths: [])
+        context.beginPath()
+        context.move(to: CGPoint(x: x, y: y))
+        context.addLine(to: CGPoint(x: x, y: y + height))
+        context.strokePath()
+        
+        context.restoreGState()
+    }
+    
     /// - returns: An angle between 0.0 < 360.0 (not less than zero, less than 360)
     internal class func normalizedAngleFromAngle(_ angle: CGFloat) -> CGFloat
     {
