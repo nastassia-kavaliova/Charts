@@ -140,21 +140,93 @@ open class YAxisRenderer: AxisRendererBase
         
         let labelFont = yAxis.labelFont
         let labelTextColor = yAxis.labelTextColor
+        let legendType = yAxis.legendType
         
-        let from = yAxis.isDrawBottomYLabelEntryEnabled ? 0 : 1
-        let to = yAxis.isDrawTopYLabelEntryEnabled ? yAxis.entryCount : (yAxis.entryCount - 1)
+        var textOffset: CGFloat = 10.0
+        var unit = ""
         
-        for i in stride(from: from, to: to, by: 1)
-        {
-            let text = yAxis.getFormattedLabel(i)
-            
-            ChartUtils.drawText(
-                context: context,
-                text: text,
-                point: CGPoint(x: fixedPosition, y: positions[i].y + offset),
-                align: textAlign,
-                attributes: [NSFontAttributeName: labelFont, NSForegroundColorAttributeName: labelTextColor])
+        if let yUnit = yAxis.unit, yUnit.characters.count > 0 {
+            unit = " " + yUnit
+            let unitsSize = unit.size(attributes: [NSFontAttributeName: labelFont])
+            textOffset = textOffset + unitsSize.width/2
         }
+        switch legendType {
+        case .all:
+            for i in 0 ..< yAxis.entryCount
+            {
+                let text = yAxis.getFormattedLabel(i) + unit
+                
+                if !yAxis.isDrawTopYLabelEntryEnabled && i >= yAxis.entryCount - 1
+                {
+                    break
+                }
+                
+                ChartUtils.drawText(
+                    context: context,
+                    text: text,
+                    point: CGPoint(x: fixedPosition - textOffset, y: positions[i].y + offset),
+                    align: textAlign,
+                    attributes: [NSFontAttributeName: labelFont, NSForegroundColorAttributeName: labelTextColor])
+            }
+        case .lowHigh:
+            if yAxis.entryCount > 0, let firstAuxiliaryTitle = yAxis.legendAuxiliaryTitles.first {
+                let firstEntryIndex = 0
+                let lowValueText = yAxis.getFormattedLabel(firstEntryIndex) + unit
+                
+                ChartUtils.drawText(
+                    context: context,
+                    text: lowValueText,
+                    point: CGPoint(x: fixedPosition - textOffset, y: positions[firstEntryIndex].y + offset),
+                    align: textAlign,
+                    attributes: [NSFontAttributeName: labelFont, NSForegroundColorAttributeName: labelTextColor])
+                
+                drawAuxiliaryYLabel(context: context,
+                                    title: firstAuxiliaryTitle,
+                                    fixedPosition: fixedPosition,
+                                    yPosition: positions[firstEntryIndex].y,
+                                    offset: offset,
+                                    textAlign: textAlign)
+                
+            }
+            if yAxis.entryCount > 1, let lastAuxiliaryTitle = yAxis.legendAuxiliaryTitles.last {
+                let lastEntryIndex = yAxis.entryCount - 1
+                let lowValueText = yAxis.getFormattedLabel(lastEntryIndex) + unit
+                
+                ChartUtils.drawText(
+                    context: context,
+                    text: lowValueText,
+                    point: CGPoint(x: fixedPosition - textOffset, y: positions[lastEntryIndex].y + offset),
+                    align: textAlign,
+                    attributes: [NSFontAttributeName: labelFont, NSForegroundColorAttributeName: labelTextColor])
+                
+                drawAuxiliaryYLabel(context: context,
+                                    title: lastAuxiliaryTitle,
+                                    fixedPosition: fixedPosition,
+                                    yPosition: positions[lastEntryIndex].y,
+                                    offset: offset,
+                                    textAlign: textAlign)
+                
+            }
+        }
+        
+    }
+    
+    private func drawAuxiliaryYLabel(context: CGContext, title: String, fixedPosition: CGFloat, yPosition: CGFloat, offset: CGFloat, textAlign: NSTextAlignment) {
+        guard
+            let yAxis = self.axis as? YAxis
+            else { return }
+        let labelTextColor = yAxis.labelTextColor
+        let legendAuxiliaryTitlesFont = yAxis.legendAuxiliaryTitlesFont
+        let firstEntryTitleSize = title.size(attributes: [NSFontAttributeName: legendAuxiliaryTitlesFont])
+        let legendAuxiliaryTitlesOffset = firstEntryTitleSize.width/2 + 5
+        let firstEntryTitleYPosition = yPosition + offset - firstEntryTitleSize.height
+        
+        ChartUtils.drawText(
+            context: context,
+            text: title,
+            point: CGPoint(x: fixedPosition - legendAuxiliaryTitlesOffset, y: firstEntryTitleYPosition),
+            align: textAlign,
+            attributes: [NSFontAttributeName: legendAuxiliaryTitlesFont, NSForegroundColorAttributeName: labelTextColor])
     }
     
     open override func renderGridLines(context: CGContext)
