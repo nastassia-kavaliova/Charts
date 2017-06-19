@@ -199,6 +199,10 @@ public protocol IChartDataSet
     /// - returns: The color at the specified index that is used for drawing the values inside the chart. Uses modulus internally.
     func valueTextColorAt(_ index: Int) -> NSUIColor
     
+    var isDrawOneValue: Bool { get set }
+    
+    var valueUnit: String { get set }
+    
     /// the font for the value-text labels
     var valueFont: NSUIFont { get set }
     
