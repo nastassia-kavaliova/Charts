@@ -538,8 +538,6 @@ open class LineChartRenderer: LineRadarRenderer
                 let trans = dataProvider.getTransformer(forAxis: dataSet.axisDependency)
                 let valueToPixelMatrix = trans.valueToPixelMatrix
                 
-                let iconsOffset = dataSet.iconsOffset
-                
                 // make sure the values do not interfear with the circles
                 var valOffset = Int(dataSet.circleRadius * 1.75)
                 
@@ -568,7 +566,40 @@ open class LineChartRenderer: LineRadarRenderer
                         continue
                     }
                     
-                    if dataSet.isDrawValuesEnabled {
+                    if dataSet.isDrawOneValue {
+                        if shouldDrawSpecialLabel(withX: pt.x) {
+                            let unit = dataSet.valueUnit.characters.count > 0 ? " " + dataSet.valueUnit : ""
+                            var deltaX: CGFloat = 0.0
+                            if unit.characters.count > 0 {
+                                deltaX = unit.size(attributes: [NSFontAttributeName: valueFont]).width/2 - 2.0
+                            }
+                            ChartUtils.drawText(
+                                context: context,
+                                text: formatter.stringForValue(
+                                    e.y,
+                                    entry: e,
+                                    dataSetIndex: i,
+                                    viewPortHandler: viewPortHandler) + unit,
+                                point: CGPoint(
+                                    x: pt.x - deltaX,
+                                    y: pt.y - CGFloat(valOffset) - valueFont.lineHeight - 2.0),
+                                align: .center,
+                                attributes: [NSFontAttributeName: valueFont, NSForegroundColorAttributeName: dataSet.valueTextColorAt(j)])
+                            
+                            let textHeight = unit.size(attributes: [NSFontAttributeName: valueFont]).height
+                            
+                            ChartUtils.drawLine(
+                                context: context,
+                                x: pt.x,
+                                y: pt.y - CGFloat(valOffset) - valueFont.lineHeight + textHeight,
+                                width: valueLineSize.width,
+                                height: valueLineSize.height
+                            )
+                        }
+                        
+                    }
+                    else {
+                        
                         ChartUtils.drawText(
                             context: context,
                             text: formatter.stringForValue(
@@ -581,15 +612,7 @@ open class LineChartRenderer: LineRadarRenderer
                                 y: pt.y - CGFloat(valOffset) - valueFont.lineHeight),
                             align: .center,
                             attributes: [NSFontAttributeName: valueFont, NSForegroundColorAttributeName: dataSet.valueTextColorAt(j)])
-                    }
-                    
-                    if let icon = e.icon, dataSet.isDrawIconsEnabled
-                    {
-                        ChartUtils.drawImage(context: context,
-                                             image: icon,
-                                             x: pt.x + iconsOffset.x,
-                                             y: pt.y + iconsOffset.y,
-                                             size: icon.size)
+                        
                     }
                 }
             }
