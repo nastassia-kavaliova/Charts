@@ -22,6 +22,10 @@ open class BarLineScatterCandleBubbleRenderer: DataRenderer
         super.init(animator: animator, viewPortHandler: viewPortHandler)
     }
     
+    internal func shouldDrawSpecialLabel(withX x: CGFloat) -> Bool {
+        return x >= specialLabelMinX && x <= specialLabelMaxX
+    }
+    
     /// Checks if the provided entry object is in bounds for drawing considering the current animation phase.
     internal func isInBoundsX(entry e: ChartDataEntry, dataSet: IBarLineScatterCandleBubbleChartDataSet) -> Bool
     {
