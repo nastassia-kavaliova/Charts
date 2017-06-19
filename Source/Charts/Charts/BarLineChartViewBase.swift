@@ -56,6 +56,49 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
     /// **default**: false
     open var keepPositionOnRotation: Bool = false
     
+    
+    open var valueLineSize = CGSize() {
+        didSet {
+            if renderer is CombinedChartRenderer {
+                for renderer in (renderer as! CombinedChartRenderer)._renderers {
+                    renderer.valueLineSize = valueLineSize
+                }
+            }
+            else {
+                renderer?.valueLineSize = valueLineSize
+            }
+        }
+    }
+    open var specialLabelMinX: CGFloat = 0.0 {
+        didSet {
+            if renderer is CombinedChartRenderer {
+                for renderer in (renderer as! CombinedChartRenderer)._renderers {
+                    renderer.specialLabelMinX = specialLabelMinX
+                }
+            }
+            else {
+                renderer?.specialLabelMinX = specialLabelMinX
+            }
+        }
+    }
+    open var specialLabelMaxX: CGFloat = 0.0 {
+        didSet {
+            if renderer is CombinedChartRenderer {
+                for renderer in (renderer as! CombinedChartRenderer)._renderers {
+                    renderer.specialLabelMaxX = specialLabelMaxX
+                }
+            }
+            else {
+                renderer?.specialLabelMaxX = specialLabelMaxX
+            }
+        }
+    }
+    
+    open var isLeftScrollLimited = false
+    
+    open var rightSideMaxOffset = 0.0
+    
+    
     /// the object representing the left y-axis
     internal var _leftAxis: YAxis!
     
@@ -789,6 +832,10 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
         var matrix = CGAffineTransform(translationX: translation.x, y: translation.y)
         matrix = originalMatrix.concatenating(matrix)
         
+        if isLeftScrollLimited && matrix.tx < CGFloat(rightSideMaxOffset)  && translation.x < 0 {
+            return false
+        }
+
         matrix = _viewPortHandler.refresh(newMatrix: matrix, chart: self, invalidate: true)
         
         if delegate !== nil
