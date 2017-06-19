@@ -15,6 +15,10 @@ import CoreGraphics
 
 open class ChartBaseDataSet: NSObject, IChartDataSet
 {
+    public var isDrawOneValue: Bool = false
+    
+    public var valueUnit: String = ""
+    
     public required override init()
     {
         super.init()
