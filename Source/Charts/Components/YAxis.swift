@@ -38,6 +38,25 @@ open class YAxis: AxisBase
         case right
     }
     
+    //weatherlink design
+    @objc
+    public enum AxisLegendType: Int
+    {
+        case all
+        case lowHigh
+    }
+    open var legendType = AxisLegendType.all
+    
+    open var legendAuxiliaryTitlesFont = NSUIFont.systemFont(ofSize: 12.0)
+    
+    open var legendAuxiliaryTitles = [String]()
+    
+    open var unit: String?
+    
+    open var extraBottomOffset: CGFloat = 0.0
+    
+    open var extraTopOffset: CGFloat = 0.0
+
     /// indicates if the bottom y-label entry is drawn or not
     open var drawBottomYLabelEntryEnabled = true
     
