@@ -25,7 +25,10 @@ open class AxisBase: ComponentBase
     fileprivate var _axisValueFormatter: IAxisValueFormatter?
     
     open var labelFont = NSUIFont.systemFont(ofSize: 10.0)
+    open var specialLabelsFont = NSUIFont.systemFont(ofSize: 10.0)
     open var labelTextColor = NSUIColor.black
+    open var specialLabelsTextColor = NSUIColor.black
+    open var shouldDrawSpecialLabels = false
     
     open var axisLineColor = NSUIColor.gray
     open var axisLineWidth = CGFloat(0.5)
