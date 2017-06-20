@@ -193,16 +193,6 @@ open class AxisRendererBase: Renderer
             }
         }
         
-        // set decimals
-        if interval < 1
-        {
-            axis.decimals = Int(ceil(-log10(interval)))
-        }
-        else
-        {
-            axis.decimals = 0
-        }
-        
         if axis.centerAxisLabelsEnabled
         {
             axis.centeredEntries.reserveCapacity(n)
