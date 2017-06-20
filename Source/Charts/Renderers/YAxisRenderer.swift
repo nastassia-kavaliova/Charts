@@ -142,13 +142,9 @@ open class YAxisRenderer: AxisRendererBase
         let labelTextColor = yAxis.labelTextColor
         let legendType = yAxis.legendType
         
-        var textOffset: CGFloat = 10.0
         var unit = ""
-        
         if let yUnit = yAxis.unit, yUnit.characters.count > 0 {
             unit = " " + yUnit
-            let unitsSize = unit.size(attributes: [NSFontAttributeName: labelFont])
-            textOffset = textOffset + unitsSize.width/2
         }
         switch legendType {
         case .all:
@@ -160,11 +156,13 @@ open class YAxisRenderer: AxisRendererBase
                 {
                     break
                 }
+                let textXPosition = calculateXPosition(forText: text,
+                                                       fixedPosition: fixedPosition)
                 
                 ChartUtils.drawText(
                     context: context,
                     text: text,
-                    point: CGPoint(x: fixedPosition - textOffset, y: positions[i].y + offset),
+                    point: CGPoint(x: textXPosition, y: positions[i].y + offset),
                     align: textAlign,
                     attributes: [NSFontAttributeName: labelFont, NSForegroundColorAttributeName: labelTextColor])
             }
@@ -172,11 +170,12 @@ open class YAxisRenderer: AxisRendererBase
             if yAxis.entryCount > 0, let firstAuxiliaryTitle = yAxis.legendAuxiliaryTitles.first {
                 let firstEntryIndex = 0
                 let lowValueText = yAxis.getFormattedLabel(firstEntryIndex) + unit
-                
+                let textXPosition = calculateXPosition(forText: lowValueText,
+                                                       fixedPosition: fixedPosition)
                 ChartUtils.drawText(
                     context: context,
                     text: lowValueText,
-                    point: CGPoint(x: fixedPosition - textOffset, y: positions[firstEntryIndex].y + offset),
+                    point: CGPoint(x: textXPosition, y: positions[firstEntryIndex].y + offset),
                     align: textAlign,
                     attributes: [NSFontAttributeName: labelFont, NSForegroundColorAttributeName: labelTextColor])
                 
@@ -190,12 +189,14 @@ open class YAxisRenderer: AxisRendererBase
             }
             if yAxis.entryCount > 1, let lastAuxiliaryTitle = yAxis.legendAuxiliaryTitles.last {
                 let lastEntryIndex = yAxis.entryCount - 1
-                let lowValueText = yAxis.getFormattedLabel(lastEntryIndex) + unit
-                
+                let valueText = yAxis.getFormattedLabel(lastEntryIndex)
+                let lowValueText = valueText + unit
+                let textXPosition = calculateXPosition(forText: lowValueText,
+                                                       fixedPosition: fixedPosition)
                 ChartUtils.drawText(
                     context: context,
                     text: lowValueText,
-                    point: CGPoint(x: fixedPosition - textOffset, y: positions[lastEntryIndex].y + offset),
+                    point: CGPoint(x: textXPosition, y: positions[lastEntryIndex].y + offset),
                     align: textAlign,
                     attributes: [NSFontAttributeName: labelFont, NSForegroundColorAttributeName: labelTextColor])
                 
@@ -210,6 +211,22 @@ open class YAxisRenderer: AxisRendererBase
         }
         
     }
+    
+    private func calculateXPosition(forText text: String, fixedPosition: CGFloat) -> CGFloat {
+        guard let yAxis = self.axis as? YAxis
+            else { return fixedPosition }
+        let labelFont = yAxis.labelFont
+        let textWidth = text.size(attributes: [NSFontAttributeName: labelFont]).width
+        var textXPosition: CGFloat
+        if textWidth > yAxis.axisLineWidth {
+            textXPosition = 0
+        }
+        else {
+            textXPosition = UIScreen.main.bounds.width - yAxis.axisLineWidth + (yAxis.axisLineWidth - textWidth)/2
+        }
+        return textXPosition
+    }
+    
     
     private func drawAuxiliaryYLabel(context: CGContext, title: String, fixedPosition: CGFloat, yPosition: CGFloat, offset: CGFloat, textAlign: NSTextAlignment) {
         guard
