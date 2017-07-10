@@ -240,12 +240,12 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
         
         _xAxisRenderer?.renderAxisLine(context: context)
         _leftYAxisRenderer?.renderAxisLine(context: context)
-        _rightYAxisRenderer?.renderAxisLine(context: context)
+        
 
         // The renderers are responsible for clipping, to account for line-width center etc.
         _xAxisRenderer?.renderGridLines(context: context)
         _leftYAxisRenderer?.renderGridLines(context: context)
-        _rightYAxisRenderer?.renderGridLines(context: context)
+        
         
         if _xAxis.isEnabled && _xAxis.isDrawLimitLinesBehindDataEnabled
         {
@@ -294,6 +294,8 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
         
         _xAxisRenderer.renderAxisLabels(context: context)
         _leftYAxisRenderer.renderAxisLabels(context: context)
+        _rightYAxisRenderer?.renderAxisLine(context: context)
+        _rightYAxisRenderer?.renderGridLines(context: context)
         _rightYAxisRenderer.renderAxisLabels(context: context)
 
         if clipValuesToContentEnabled
