@@ -189,7 +189,9 @@ open class YAxisRenderer: AxisRendererBase
             }
             if yAxis.entryCount > 1, let lastAuxiliaryTitle = yAxis.legendAuxiliaryTitles.last {
                 let lastEntryIndex = yAxis.entryCount - 1
-                let valueText = yAxis.getFormattedLabel(lastEntryIndex)
+                let axisMax = yAxis.axisMaximum
+                let originMax = Double((CGFloat(axisMax) + yAxis.spaceTop*CGFloat(yAxis.axisMinimum))/(1.0 + yAxis.spaceTop))
+                let valueText = yAxis.valueFormatter?.stringForValue(originMax, axis: yAxis) ?? ""
                 let lowValueText = valueText + unit
                 let textXPosition = calculateXPosition(forText: lowValueText,
                                                        fixedPosition: fixedPosition)
