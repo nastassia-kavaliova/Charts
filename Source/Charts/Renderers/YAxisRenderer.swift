@@ -169,20 +169,24 @@ open class YAxisRenderer: AxisRendererBase
         case .lowHigh:
             if yAxis.entryCount > 0, let firstAuxiliaryTitle = yAxis.legendAuxiliaryTitles.first {
                 let firstEntryIndex = 0
-                let lowValueText = yAxis.getFormattedLabel(firstEntryIndex) + unit
+                let axisMinValueString = yAxis.valueFormatter?.stringForValue(yAxis.axisMinimum, axis: yAxis) ?? ""
+                let lowValueText = axisMinValueString + unit
+                
                 let textXPosition = calculateXPosition(forText: lowValueText,
                                                        fixedPosition: fixedPosition)
+                let yPosition = (viewPortHandler?.contentRect.maxY ?? positions[firstEntryIndex].y) + offset
+                
                 ChartUtils.drawText(
                     context: context,
                     text: lowValueText,
-                    point: CGPoint(x: textXPosition, y: positions[firstEntryIndex].y + offset),
+                    point: CGPoint(x: textXPosition, y: yPosition),
                     align: textAlign,
                     attributes: [NSFontAttributeName: labelFont, NSForegroundColorAttributeName: labelTextColor])
                 
                 drawAuxiliaryYLabel(context: context,
                                     title: firstAuxiliaryTitle,
                                     fixedPosition: fixedPosition,
-                                    yPosition: positions[firstEntryIndex].y,
+                                    yPosition: yPosition + 8,
                                     offset: offset,
                                     textAlign: textAlign)
                 
