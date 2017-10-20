@@ -230,6 +230,10 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
         
         if _rightAxis.isEnabled
         {
+            // TODO: improve this aproach
+            if let dataSet = data?.dataSets.first {
+                _rightYAxisRenderer.axisMaximumValue = dataSet.yMax
+            }
             _rightYAxisRenderer?.computeAxis(min: _rightAxis._axisMinimum, max: _rightAxis._axisMaximum, inverted: _rightAxis.isInverted)
         }
         
