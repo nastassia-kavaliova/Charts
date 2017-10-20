@@ -194,7 +194,7 @@ open class YAxisRenderer: AxisRendererBase
                                     textAlign: textAlign)
                 
             }
-            if yAxis.entryCount > 1, let lastAuxiliaryTitle = yAxis.legendAuxiliaryTitles.last {
+            if yAxis.entryCount > 1, let lastAuxiliaryTitle = yAxis.legendAuxiliaryTitles.last, let maxValue = axisMaximumValue, maxValue != yAxis.axisMinimum {
                 let lastEntryIndex = yAxis.entryCount - 1
                 let axisMax = yAxis.axisMaximum
                 let originMax = Double((CGFloat(axisMax) + yAxis.spaceTop*CGFloat(yAxis.axisMinimum))/(1.0 + yAxis.spaceTop))
