@@ -19,6 +19,9 @@ import CoreGraphics
 @objc(ChartYAxisRenderer)
 open class YAxisRenderer: AxisRendererBase
 {
+    /// to prevent wrong "HIGH" value drawing for charts with one y value like [0.0, 0.0, 0.0 ...]
+    var axisMaximumValue: Double?
+    
     public init(viewPortHandler: ViewPortHandler?, yAxis: YAxis?, transformer: Transformer?)
     {
         super.init(viewPortHandler: viewPortHandler, transformer: transformer, axis: yAxis)
