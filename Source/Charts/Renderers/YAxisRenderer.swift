@@ -121,8 +121,8 @@ open class YAxisRenderer: AxisRendererBase
         else
         {
             context.beginPath()
-            context.move(to: CGPoint(x: viewPortHandler.contentRight, y: viewPortHandler.contentTop))
-            context.addLine(to: CGPoint(x: viewPortHandler.contentRight, y: viewPortHandler.contentBottom))
+            context.move(to: CGPoint(x: viewPortHandler.contentRight, y: viewPortHandler.contentTop - yAxis.extraTopOffset))
+            context.addLine(to: CGPoint(x: viewPortHandler.contentRight, y: viewPortHandler.contentBottom + yAxis.extraBottomOffset))
             context.strokePath()
         }
         
