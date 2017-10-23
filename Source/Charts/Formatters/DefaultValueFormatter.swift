@@ -48,6 +48,7 @@ open class DefaultValueFormatter: NSObject, IValueFormatter
                 self.formatter?.minimumFractionDigits = digits
                 self.formatter?.maximumFractionDigits = digits
                 self.formatter?.usesGroupingSeparator = true
+                self.formatter?.minimumIntegerDigits = 1
             }
         }
     }

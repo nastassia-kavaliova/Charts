@@ -46,6 +46,7 @@ open class DefaultAxisValueFormatter: NSObject, IAxisValueFormatter
                 self.formatter?.minimumFractionDigits = digits
                 self.formatter?.maximumFractionDigits = digits
                 self.formatter?.usesGroupingSeparator = true
+                self.formatter?.minimumIntegerDigits = 1
             }
         }
     }
