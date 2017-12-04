@@ -949,6 +949,17 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
     
     open func gestureRecognizer(_ gestureRecognizer: NSUIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: NSUIGestureRecognizer) -> Bool
     {
+        // WLM additions started
+        // to fix conflict with table view scrolling
+        if otherGestureRecognizer is UIPanGestureRecognizer, let otherGestureRecognizerView = otherGestureRecognizer.view as? UITableView {
+            let otherGestureVelocity = (otherGestureRecognizer as! UIPanGestureRecognizer).velocity(in: otherGestureRecognizerView)
+            
+            if fabs(otherGestureVelocity.y) > fabs(otherGestureVelocity.x) {
+                return true
+            }
+        }
+        // WLM additions ended
+        
         #if !os(tvOS)
             if ((gestureRecognizer.isKind(of: NSUIPinchGestureRecognizer.self) &&
                 otherGestureRecognizer.isKind(of: NSUIPanGestureRecognizer.self)) ||
