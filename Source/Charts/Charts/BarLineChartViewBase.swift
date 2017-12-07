@@ -911,6 +911,13 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
             {
                 return false
             }
+            
+            // to lock horizontal scrolling while container view is scrolled vertically
+            let panVelocity = _panGestureRecognizer.velocity(in: _panGestureRecognizer.view)
+            if fabs(panVelocity.y) > fabs(panVelocity.x) {
+                return false
+            }
+            
         }
         else
         {
