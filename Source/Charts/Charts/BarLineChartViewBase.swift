@@ -296,6 +296,8 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
             _rightYAxisRenderer?.renderLimitLines(context: context)
         }
         
+        _xAxisRenderer.colorAxis(context: context)
+
         _xAxisRenderer.renderAxisLabels(context: context)
         _leftYAxisRenderer.renderAxisLabels(context: context)
         _rightYAxisRenderer?.renderAxisLine(context: context)
