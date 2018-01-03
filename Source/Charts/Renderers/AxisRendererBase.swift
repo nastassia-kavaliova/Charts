@@ -21,6 +21,9 @@ open class AxisRendererBase: Renderer
     /// transformer to transform values to screen pixels and return
     open var transformer: Transformer?
     
+    /// background color of axis
+    open var axisBackgroundColor: UIColor?
+    
     public override init()
     {
         super.init()
@@ -32,6 +35,12 @@ open class AxisRendererBase: Renderer
         
         self.transformer = transformer
         self.axis = axis
+    }
+    
+    /// Fills axis background with axisBackgroundColor if set
+    open func colorAxis(context: CGContext)
+    {
+        fatalError("renderAxisLabels() cannot be called on AxisRendererBase")
     }
     
     /// Draws the axis labels on the specified context
