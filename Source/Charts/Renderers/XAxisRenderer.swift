@@ -85,6 +85,35 @@ open class XAxisRenderer: AxisRendererBase
         xAxis.labelRotatedHeight = labelRotatedSize.height
     }
     
+    open override func colorAxis(context: CGContext) {
+        guard let
+            xAxis = self.axis as? XAxis,
+            let viewPortHandler = self.viewPortHandler,
+            let axisBackgroundColor = self.axisBackgroundColor
+            else { return }
+        
+        let axisMinY, axisHeight: CGFloat
+        
+        switch xAxis.labelPosition {
+        case .bottom:
+            axisMinY = viewPortHandler.contentBottom
+            axisHeight = viewPortHandler.chartHeight - viewPortHandler.contentBottom
+        case .top:
+            axisMinY = 0
+            axisHeight = viewPortHandler.contentTop
+        case .bottomInside:
+            return
+        case .topInside:
+            return
+        case .bothSided:
+            return
+        }
+        
+        context.setFillColor(axisBackgroundColor.cgColor)
+        context.fill(CGRect(x: 0, y: axisMinY, width: viewPortHandler.chartWidth, height: axisHeight))
+        
+    }
+    
     open override func renderAxisLabels(context: CGContext)
     {
         guard let
