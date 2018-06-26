@@ -145,15 +145,11 @@ open class YAxisRenderer: AxisRendererBase
         let labelTextColor = yAxis.labelTextColor
         let legendType = yAxis.legendType
         
-        var unit = ""
-        if let yUnit = yAxis.unit, yUnit.characters.count > 0 {
-            unit = " " + yUnit
-        }
         switch legendType {
         case .all:
             for i in 0 ..< yAxis.entryCount
             {
-                let text = yAxis.getFormattedLabel(i) + unit
+                let text = yAxis.getFormattedLabel(i)
                 
                 if !yAxis.isDrawTopYLabelEntryEnabled && i >= yAxis.entryCount - 1
                 {
@@ -173,7 +169,7 @@ open class YAxisRenderer: AxisRendererBase
             if yAxis.entryCount > 0, let firstAuxiliaryTitle = yAxis.legendAuxiliaryTitles.first {
                 let firstEntryIndex = 0
                 let axisMinValueString = yAxis.valueFormatter?.stringForValue(yAxis.axisMinimum, axis: yAxis) ?? ""
-                let lowValueText = axisMinValueString + unit
+                let lowValueText = axisMinValueString
                 
                 let textXPosition = calculateXPosition(forText: lowValueText,
                                                        fixedPosition: fixedPosition)
@@ -199,7 +195,7 @@ open class YAxisRenderer: AxisRendererBase
                 let axisMax = yAxis.axisMaximum
                 let originMax = Double((CGFloat(axisMax) + yAxis.spaceTop*CGFloat(yAxis.axisMinimum))/(1.0 + yAxis.spaceTop))
                 let valueText = yAxis.valueFormatter?.stringForValue(originMax, axis: yAxis) ?? ""
-                let lowValueText = valueText + unit
+                let lowValueText = valueText
                 let textXPosition = calculateXPosition(forText: lowValueText,
                                                        fixedPosition: fixedPosition)
                 ChartUtils.drawText(
