@@ -567,6 +567,12 @@ open class LineChartRenderer: LineRadarRenderer
                             if unit.count > 0 {
                                 deltaX = unit.size(withAttributes: [NSAttributedStringKey.font: valueFont]).width/2 - 2.0
                             }
+                            // here update y position if needed
+                            
+                            var textDeltaY: CGFloat = 0.0
+                            if dataSet is ChartDataSet, let valueOffset = (dataSet as! ChartDataSet).valueOffsetForIndex(j) {
+                                textDeltaY =  CGFloat(valueOffset)
+                            }
                             ChartUtils.drawText(
                                 context: context,
                                 text: formatter.stringForValue(
@@ -576,19 +582,19 @@ open class LineChartRenderer: LineRadarRenderer
                                     viewPortHandler: viewPortHandler) + unit,
                                 point: CGPoint(
                                     x: pt.x - deltaX,
-                                    y: pt.y - CGFloat(valOffset) - valueFont.lineHeight - 2.0),
+                                    y: pt.y - CGFloat(valOffset) - valueFont.lineHeight - 2.0 - textDeltaY),
                                 align: .center,
                                 attributes: [NSAttributedStringKey.font: valueFont, NSAttributedStringKey.foregroundColor: dataSet.valueTextColorAt(j)])
                             
                             let textHeight = unit.size(withAttributes: [NSAttributedStringKey.font: valueFont]).height
                             
-                            ChartUtils.drawLine(
-                                context: context,
-                                x: pt.x,
-                                y: pt.y - CGFloat(valOffset) - valueFont.lineHeight + textHeight,
-                                width: valueLineSize.width,
-                                height: valueLineSize.height
-                            )
+                            ChartUtils.drawCircle(context: context,
+                                                  x: pt.x,
+                                                  y: pt.y - CGFloat(valOffset) - valueFont.lineHeight + textHeight - 1,
+                                                  radius: 5.0,
+                                                  borderWidth: 2,
+                                                  color: valueLineColor,
+                                                  fillColor: indicatorFillColor)
                         }
                         
                     }
