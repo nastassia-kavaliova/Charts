@@ -141,9 +141,37 @@ open class YAxisRenderer: AxisRendererBase
         
         switch legendType {
         case .all:
+            // here do not draw y label if there is duplicate
+            var allLabelsReverted = [String]()
+            
+            for i in stride(from: yAxis.entryCount - 1, to: -1, by: -1) {
+                
+                let yAxisLabel = yAxis.getFormattedLabel(i)
+                if i == yAxis.entryCount - 1 || !allLabelsReverted.contains(yAxisLabel) {
+                    allLabelsReverted.append(yAxisLabel)
+                } else {
+                    allLabelsReverted.append("")
+                }
+            }
+            
+            //always display first label
+            
+            if let last = allLabelsReverted.last, last.count == 0 {
+                
+                for i in stride(from: yAxis.entryCount - 1, to: -1, by: -1) {
+                    if allLabelsReverted[i].count > 0 {
+                        allLabelsReverted[yAxis.entryCount - 1] = allLabelsReverted[i]
+                        allLabelsReverted[i] = ""
+                        break
+                    }
+                }
+            }
             for i in 0 ..< yAxis.entryCount
             {
-                let text = yAxis.getFormattedLabel(i)
+                let text = allLabelsReverted[yAxis.entryCount - i - 1]
+                if text.count == 0 {
+                    continue
+                }
                 
                 if !yAxis.isDrawTopYLabelEntryEnabled && i >= yAxis.entryCount - 1
                 {
@@ -160,30 +188,38 @@ open class YAxisRenderer: AxisRendererBase
                     attributes: [NSAttributedStringKey.font: labelFont, NSAttributedStringKey.foregroundColor: labelTextColor])
             }
         case .lowHigh:
-            if yAxis.entryCount > 0, let firstAuxiliaryTitle = yAxis.legendAuxiliaryTitles.first {
-                let axisMinValueString = yAxis.valueFormatter?.stringForValue(yAxis.axisMinimum, axis: yAxis) ?? ""
+            if yAxis.entryCount > 0, var firstAuxiliaryTitle = yAxis.legendAuxiliaryTitles.first {
+                let axisMinValueString = yAxis.valueFormatter?.stringForValue(yAxis.axisLowValue, axis: yAxis) ?? ""
                 let lowValueText = axisMinValueString
                 
                 let textXPosition = calculateXPosition(forText: lowValueText,
                                                        fixedPosition: fixedPosition)
-                let yPosition = (viewPortHandler.contentRect.maxY ) + offset
+                var yPosition = viewPortHandler.contentRect.maxY + offset
+                let lowValueOffset: CGFloat = yAxis.axisMinimum != yAxis.axisLowValue ? -6.0 : 0.0
+                yPosition = yPosition + 8 + lowValueOffset
+                if let _ = yAxis.axisHighValue {
+                    firstAuxiliaryTitle = yAxis.legendAuxiliaryTitles[1]
+                    let maxY = viewPortHandler.contentRect.maxY
+                    yPosition = maxY/3
+                    
+                }
                 
                 ChartUtils.drawText(
                     context: context,
                     text: lowValueText,
-                    point: CGPoint(x: textXPosition, y: yPosition),
+                    point: CGPoint(x: textXPosition, y: yPosition + lowValueOffset),
                     align: textAlign,
                     attributes: [NSAttributedStringKey.font: labelFont, NSAttributedStringKey.foregroundColor: labelTextColor])
                 
                 drawAuxiliaryYLabel(context: context,
                                     title: firstAuxiliaryTitle,
                                     fixedPosition: fixedPosition,
-                                    yPosition: yPosition + 8,
+                                    yPosition: yPosition,
                                     offset: offset,
                                     textAlign: textAlign)
                 
             }
-            if yAxis.entryCount > 1, let lastAuxiliaryTitle = yAxis.legendAuxiliaryTitles.last, let maxValue = axisMaximumValue, maxValue != yAxis.axisMinimum {
+            if yAxis.entryCount > 1, let lastAuxiliaryTitle = yAxis.legendAuxiliaryTitles.last, let maxValue = axisMaximumValue, maxValue != yAxis.axisMinimum, yAxis.axisHighValue == nil {
                 let lastEntryIndex = yAxis.entryCount - 1
                 let axisMax = yAxis.axisMaximum
                 let originMax = Double((CGFloat(axisMax) + yAxis.spaceTop*CGFloat(yAxis.axisMinimum))/(1.0 + yAxis.spaceTop))
@@ -191,19 +227,21 @@ open class YAxisRenderer: AxisRendererBase
                 let lowValueText = valueText
                 let textXPosition = calculateXPosition(forText: lowValueText,
                                                        fixedPosition: fixedPosition)
+                let shouldDrawAuxillaryLabel = lastAuxiliaryTitle.count > 0
                 ChartUtils.drawText(
                     context: context,
                     text: lowValueText,
                     point: CGPoint(x: textXPosition, y: positions[lastEntryIndex].y + offset),
                     align: textAlign,
                     attributes: [NSAttributedStringKey.font: labelFont, NSAttributedStringKey.foregroundColor: labelTextColor])
-                
-                drawAuxiliaryYLabel(context: context,
-                                    title: lastAuxiliaryTitle,
-                                    fixedPosition: fixedPosition,
-                                    yPosition: positions[lastEntryIndex].y,
-                                    offset: offset,
-                                    textAlign: textAlign)
+                 if shouldDrawAuxillaryLabel {
+                    drawAuxiliaryYLabel(context: context,
+                                        title: lastAuxiliaryTitle,
+                                        fixedPosition: fixedPosition,
+                                        yPosition: positions[lastEntryIndex].y,
+                                        offset: offset,
+                                        textAlign: textAlign)
+                }
                 
             }
         }
@@ -237,7 +275,6 @@ open class YAxisRenderer: AxisRendererBase
         }
         return textXPosition
     }
-    
     
     private func drawAuxiliaryYLabel(context: CGContext, title: String, fixedPosition: CGFloat, yPosition: CGFloat, offset: CGFloat, textAlign: NSTextAlignment) {
         guard
