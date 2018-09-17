@@ -16,6 +16,9 @@ import CoreGraphics
 open class DataRenderer: Renderer
 {
 
+    open var valueLineColor = UIColor.white
+    open var indicatorFillColor = UIColor.blue
+    
     open var valueLineSize = CGSize()
     open var specialLabelMinX: CGFloat = 0.0
     open var specialLabelMaxX: CGFloat = 0.0
