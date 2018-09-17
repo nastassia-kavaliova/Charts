@@ -319,7 +319,6 @@ open class AxisBase: ComponentBase
         }
     }
     
-    
     // value displayed under "LOW" label
     open var axisLowValue: Double = 0.0
     
