@@ -298,6 +298,28 @@ open class ChartUtils
         context.restoreGState()
     }
     
+    open class func drawCircle(context: CGContext, x: CGFloat, y: CGFloat, radius: CGFloat, borderWidth: CGFloat, color: UIColor, fillColor: UIColor = UIColor.blue)
+    {
+        
+        context.saveGState()
+        
+        context.setFillColor(fillColor.cgColor)
+        let rect = CGRect(x: x-radius, y: y+radius, width: radius*2, height: radius*2 - 2*borderWidth)
+        context.fill(rect)
+        
+        context.setStrokeColor(color.cgColor)
+        context.setLineWidth(borderWidth)
+        context.setLineDash(phase: 0.0, lengths: [])
+        context.beginPath()
+        context.move(to: CGPoint(x: x + radius, y: y + 1.5*radius))
+        // TODO: find a way to use PI constant instead of static number
+        context.addArc(center: CGPoint(x: x, y: y + 1.5*radius), radius: radius, startAngle: 0.0, endAngle: 6.28319, clockwise: true)
+        context.strokePath()
+        
+        context.restoreGState()
+    }
+    
+    
     /// - returns: An angle between 0.0 < 360.0 (not less than zero, less than 360)
     internal class func normalizedAngleFromAngle(_ angle: CGFloat) -> CGFloat
     {
