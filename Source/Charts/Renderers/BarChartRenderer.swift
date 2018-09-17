@@ -498,6 +498,10 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                                 if unit.count > 0 {
                                     deltaX = unit.size(withAttributes: [NSAttributedStringKey.font: valueFont]).width/2 - 2.0
                                 }
+                                var textDeltaY: CGFloat = 0.0
+                                if dataSet is ChartDataSet, let valueOffset = (dataSet as! ChartDataSet).valueOffsetForIndex(j) {
+                                    textDeltaY = CGFloat(valueOffset)
+                                }
                                 drawValue(
                                     context: context,
                                     value: formatter.stringForValue(
@@ -507,8 +511,8 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                                         viewPortHandler: viewPortHandler) + unit,
                                     xPos: x - deltaX,
                                     yPos: val >= 0.0
-                                        ? (rect.origin.y + posOffset) - 4
-                                        : (rect.origin.y + rect.size.height + negOffset) - 4 ,
+                                        ? (rect.origin.y + posOffset) - 4 - textDeltaY
+                                        : (rect.origin.y + rect.size.height + negOffset) - 4 - textDeltaY ,
                                     font: valueFont,
                                     align: .center,
                                     color: dataSet.valueTextColorAt(j))

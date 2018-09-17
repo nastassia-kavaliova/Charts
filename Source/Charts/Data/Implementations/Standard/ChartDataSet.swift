@@ -159,6 +159,9 @@ open class ChartDataSet: ChartBaseDataSet
     /// - returns: The maximum x-value this DataSet holds
     open override var xMax: Double { return _xMax }
     
+    // Y offsets that can be added to move up/down value label
+    open var valuesOffsets: [Double]?
+    
     /// - returns: The number of y-values this DataSet represents
     open override var entryCount: Int { return values.count }
     
@@ -172,6 +175,20 @@ open class ChartDataSet: ChartBaseDataSet
         }
         return values[i]
     }
+    
+    func valueOffsetForIndex(_ i: Int) -> Double?
+    {
+        guard let valuesOffsets = valuesOffsets else {
+            return nil
+        }
+        
+        guard valuesOffsets.count > i else {
+            return nil
+        }
+        
+        return valuesOffsets[i]
+    }
+    
     
     /// - returns: The first Entry object found at the given x-value with binary search.
     /// If the no Entry at the specified x-value is found, this method returns the Entry at the closest x-value according to the rounding.
