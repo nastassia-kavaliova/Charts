@@ -319,6 +319,13 @@ open class AxisBase: ComponentBase
         }
     }
     
+    
+    // value displayed under "LOW" label
+    open var axisLowValue: Double = 0.0
+    
+    // value displayed under "HIGH" label
+    open var axisHighValue: Double?
+    
     /// The maximum value for this axis.
     /// If set, this value will not be calculated automatically depending on the provided data.
     /// Use `resetCustomAxisMax()` to undo this.
