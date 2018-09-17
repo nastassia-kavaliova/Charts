@@ -62,6 +62,32 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
     /// **default**: false
     @objc open var keepPositionOnRotation: Bool = false
     
+    open var valueLineColor = UIColor.white {
+        didSet {
+            if renderer is CombinedChartRenderer {
+                for renderer in (renderer as! CombinedChartRenderer)._renderers {
+                    renderer.valueLineColor = valueLineColor
+                }
+            }
+            else {
+                renderer?.valueLineColor = valueLineColor
+            }
+        }
+    }
+    
+    open var indicatorFillColor = UIColor.white {
+        didSet {
+            if renderer is CombinedChartRenderer {
+                for renderer in (renderer as! CombinedChartRenderer)._renderers {
+                    renderer.indicatorFillColor = indicatorFillColor
+                }
+            }
+            else {
+                renderer?.indicatorFillColor = indicatorFillColor
+            }
+        }
+    }
+    
     open var valueLineSize = CGSize() {
         didSet {
             if renderer is CombinedChartRenderer {
